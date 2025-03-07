@@ -33,8 +33,8 @@ Follow the steps below to run the project on your local machine.
 
 ### 2. Clone the Project
 ```bash
-git clone <repository-url>
-cd airline-management-system
+git clone https://github.com/uzankubra/AirlineManagementSystem.git
+cd AirlineManagementSystem
 ```
 
 ### 3. Create and Activate a Virtual Environment
@@ -48,23 +48,12 @@ source venv/bin/activate
 python -m venv venv
 venv\Scripts\activate
 ```
-
-### 4. Install Requirements
-```bash
-pip install -r requirements.txt
-```
-
-### 5. Prepare the Database
+### 4. Prepare the Database
 ```bash
 python manage.py migrate
 ```
 
-### 6. Create a Superuser
-```bash
-python manage.py createsuperuser
-```
-
-### 7. Start the Server
+### 5. Start the Server
 ```bash
 python manage.py runserver
 ```
