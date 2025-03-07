@@ -12,7 +12,6 @@ class FlightSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def validate(self, data):
-        # Kalkış zamanı varış zamanından önce olmalı
         if data['departure_time'] >= data['arrival_time']:
             raise serializers.ValidationError("Varış zamanı kalkış zamanından sonra olmalıdır.")
         return data
@@ -25,10 +24,8 @@ class ReservationSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         flight = data['flight']
-        # Uçuş dolu mu kontrol et
         if flight.is_full():
             raise serializers.ValidationError("Uçuş dolu.")
-        # Uçuş çakışması kontrol et
         if flight.has_conflict():
             raise serializers.ValidationError("Uçuş çakışması tespit edildi.")
         return data

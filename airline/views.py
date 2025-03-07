@@ -1,6 +1,9 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.decorators import action
+
+from .filters import FlightFilter
 from .models import Airplane, Flight, Reservation
 from .serializers import AirplaneSerializer, FlightSerializer, ReservationSerializer
 from datetime import timedelta
@@ -12,7 +15,6 @@ class AirplaneViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def flights(self, request, pk=None):
-        # Belirli bir uçağın uçuşlarını listele
         airplane = self.get_object()
         flights = airplane.flights.all()
         serializer = FlightSerializer(flights, many=True)
@@ -30,7 +32,6 @@ class FlightViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get'])
     def reservations(self, request, pk=None):
-        # Belirli bir uçuşun rezervasyonlarını listele
         flight = self.get_object()
         reservations = flight.reservations.all()
         serializer = ReservationSerializer(reservations, many=True)
@@ -45,11 +46,9 @@ class ReservationViewSet(viewsets.ModelViewSet):
         flight_id = request.data.get('flight')
         flight = Flight.objects.get(id=flight_id)
 
-        # Kapasite kontrolü
         if flight.reservations.count() >= flight.airplane.capacity:
             return Response({"error": "Uçuş dolu."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Uçuş çakışması kontrolü
         departure_time = flight.departure_time
         arrival_time = flight.arrival_time
         conflicting_flights = Flight.objects.filter(
@@ -62,3 +61,9 @@ class ReservationViewSet(viewsets.ModelViewSet):
             return Response({"error": "Uçuş çakışması tespit edildi."}, status=status.HTTP_400_BAD_REQUEST)
 
         return super().create(request, *args, **kwargs)
+
+class FlightViewSet(viewsets.ModelViewSet):
+    queryset = Flight.objects.all()
+    serializer_class = FlightSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = FlightFilter
